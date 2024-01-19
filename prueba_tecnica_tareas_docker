@@ -1,0 +1,23 @@
+# Utiliza una imagen base de ASP.NET Core
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+WORKDIR /app
+EXPOSE 80
+
+# Utiliza una imagen de SDK de ASP.NET Core para compilar la aplicación
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+WORKDIR /src
+COPY ["PruebaTecnicaTareas/PruebaTecnicaTareas.csproj", "PruebaTecnicaTareas/"]
+RUN dotnet restore "PruebaTecnicaTareas/PruebaTecnicaTareas.csproj"
+COPY . .
+WORKDIR "/src/PruebaTecnicaTareas"
+RUN dotnet build "PruebaTecnicaTareas.csproj" -c Release -o /app/build
+
+# Publica la aplicación
+FROM build AS publish
+RUN dotnet publish "PruebaTecnicaTareas.csproj" -c Release -o /app/publish
+
+# Configura la imagen final
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "PruebaTecnicaTareas.dll"]
