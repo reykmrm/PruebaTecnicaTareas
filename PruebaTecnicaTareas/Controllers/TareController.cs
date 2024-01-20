@@ -20,9 +20,10 @@ namespace PruebaTecnicaTareas.Controllers
 
         //listar todas la tereas
         [HttpGet]
-        public async Task<List<Tarea>> listarTareas()
+        public async Task<IActionResult> listarTareas()
         {
-            return await _tareaService.listarTareas();
+            var tareas = await _tareaService.listarTareas();
+            return Ok(tareas);
         }
 
 
